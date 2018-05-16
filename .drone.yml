@@ -1,0 +1,17 @@
+workspace:
+  base: /firmware
+  path: /release
+pipeline:
+  build:
+    image: dvitali/pixelc-build-container:3
+    commands:
+      - git clone --depth 1 https://github.com/pixelc-linux/pixelc-get_firmware.sh fw_scripts
+      - cd fw_scripts
+      - ./get_firmware.sh
+  github_release:
+    image: plugins/github-release
+    secrets: [ github_token ]
+    files: [ /firmware/release/fw_scripts/firmware_all.tar.gz,
+      /firmware/release/fw_scripts/firmware_brcm_extra_only.tar.gz ]
+    when:
+      event: tag
